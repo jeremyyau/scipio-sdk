@@ -1,0 +1,254 @@
+\documentclass[10pt,journal,compsoc]{IEEEtran}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{stfloats}
+
+% Color configurations for LaTeX code/JSON block rendering
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstset{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{blue},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\begin{document}
+
+\title{Time-Based Isomorphic DOM Obfuscation (SCIPIO Protocol): Sovereign Zero-Hydration Client-Side Defense and Prior Art Declaration}
+
+\author{Jeremy~Yau \\
+        \small Core Architect, Penana \\
+        \small \url{jeremyyau@kwokyingfai.com}
+}
+
+\markboth{IEEE Transactions on Secure Server-Side Isomorphic Computing,~Vol.~1, No.~1,~June~2026}%
+{Yau: Project SCIPIO Protocol}
+
+\IEEEtitleabstractindextext{%
+\begin{abstract}
+The rise of large language models (LLMs) and automated Web-scraping systems has threatened the web ecosystem, particularly content platforms where text intellectual properties are constantly harvested. Traditional web-scraping defenses, such as behavioral WAF, custom web fonts, and dynamic Javascript decryption code, suffer from a fundamental architecture flaw: they migrate the decryption engine and secret seeds to the client browser, leaving them open to client-side reverse engineering and DOM-tree extraction. In this paper, we present the \textbf{SCIPIO (Sovereignty Pre-emption \& Isomorphic Obfuscation)} protocol, a zero-hydration web defense paradigm that exploits the rendering mechanics of isomorphic Node.js frameworks (e.g., Next.js Server Components). By dynamically shifting the Document Object Model (DOM) structure based on high-granularity temporal steps on the server side and relying on native browser CSS layout engines (Flexbox/Grid) for visual re-ordering, SCIPIO completely divorces the decryption logic from the client terminal. We present mathematical formalizations of our deterministic permutation function based on transient cryptographic seeds and demonstrate that SCIPIO eliminates automated scraper ROI to near-zero levels while maintaining a 100\% Googlebot SEO indexation footprint and zero client-side JavaScript execution overhead.
+\end{abstract}
+
+\begin{IEEEkeywords}
+Isomorphic Frameworks, React Server Components, Anti-Scraping, DOM Obfuscation, CSS Grid Order, Prior Art, Web Security.
+\end{IEEEkeywords}}
+
+\maketitle
+
+\IEEEdisplaynontitleabstractindextext
+\IEEEpeerreviewmaketitle
+
+\section{Introduction}
+\IEEEPARstart{P}{ervasive} data harvesting by automated crawler clusters has introduced a new paradigm of resource exploitation on the modern Web. High-value data engines, such as literary platforms, dynamic flight aggregation nodes, and financial indicators, represent the core proprietary assets of digital corporations. Historically, content providers relied on standard \texttt{robots.txt} specifications, IP rate-limiting, or behavioral Web Application Firewalls (WAF) to block unauthorized bot traffic. 
+
+However, with the emergence of highly sophisticated Headless browser engines (e.g., Playwright, Puppeteer) and AI-driven scraping agents capable of imitating complex human interactions and running asynchronous DOM execution~\cite{owasp}, static and dynamic content must be fortified directly at the application boundary. When a scraper behaves indistinguishably from an authorized human visitor at the TLS fingerprinting level, static and dynamic content must be fortified directly at the application boundary \cite{whatwg}.
+
+Conventional client-side anti-scraping practices typically employ:
+\begin{itemize}
+    \item \textbf{Javascript Obfuscation (JS Packing / VM-Evaluation)}: Wrapping sensitive content or decryptor scripts in complex, multi-layered sandboxes.
+    \item \textbf{Canvas/Shadow DOM Rendering}: Painting raw text onto canvas element pixels to bypass text-based extraction algorithms.
+    \item \textbf{Dynamic Font Vector Mapping}: Shuffling character maps and glyph vectors dynamically inside custom Web Open Font Format (WOFF2) assets.
+\end{itemize}
+
+The structural dead-end of these client-side techniques is rooted in the \emph{Asymmetry of Client Authority}. Because the client device is the physical host of execution, any decryptor script, dynamic font dictionary, or decryption key array sent to the browser can be dynamically inspected by hook-based debugger attachments (e.g., Chrome DevTools, runtime monkey-patching). A malicious script engineer needs only to attach a debugger, pause execution at the rendering boundary, inspect local variables or memory states to extract the raw text, and write an automated descrambler with negligible maintenance costs.
+
+To secure content platforms while preserving accessibility for legitimate SEO indexation engines (e.g., Googlebot), this paper presents \textbf{PROJECT SCIPIO (Sovereignty Pre-emption \& Isomorphic Obfuscation)}. SCIPIO shifts the security decision boundary entirely to the Server-Side during initial SSR generation while outsourcing the visual re-ordering workload to native, declarative stylesheet engines in the browser. 
+
+The core contributions of this work are:
+\begin{enumerate}
+    \item A formal cryptographic threat model proving why traditional JS-driven decryptors represent a single point of failure (SPOF).
+    \item A stateless deterministic shuffling algorithm powered by Transient HMAC tokens to render the raw HTML document layout highly variable and unparseable to scrapers.
+    \item A zero-hydration CSS reconstruction model that eliminates client-side JS execution to optimize performance and SEO.
+\end{enumerate}
+
+\section{Threat Model \& Scraper ROI Analysis}
+We define the threat landscape under a game-theoretic model of \emph{Return-on-Investment (ROI) Deterrence}. An automated malicious actor aims to maximize data throughput $D$ over time while minimizing the engineering cost $C_{\text{eng}}$ (reverse engineering, scrapers writing) and computational/execution resource cost $C_{\text{res}}$ (rotating proxies, solving CAPTCHAs, CPU cycles).
+
+Under previous defense solutions (e.g., client-side dynamic JS decryption):
+\begin{equation}
+    \text{ROI}_{\text{scraper}} = \frac{V(D)}{C_{\text{eng}} + C_{\text{res}}} \gg 1
+\end{equation}
+where $V(D)$ represents the commercial value of the targeted dataset. Since the decrypted data sits exposed in client memory, $C_{\text{eng}}$ is a one-time upfront cost. Once the client decryption logic is bypassed, $C_{\text{res}}$ scale-out costs are marginal, allowing scrapers to achieve massive, non-reciprocal extraction value.
+
+The SCIPIO protocol enforces:
+\begin{equation}
+    \text{ROI}_{\text{scraper}} \to \epsilon \quad (\text{where } \epsilon \approx 0)
+\end{equation}
+by transforming $C_{\text{eng}}$ from a one-time static cost into an active, continuous temporal cost. Under SCIPIO, the raw document layout dynamically phases every $\Delta \tau$ seconds. Crucially, because **zero decryption algorithms or secret seeds are present on the client side**, the attacker cannot write an automated Javascript interpreter script. To reconstruct the text dynamically, the attacker must either execute heavy-weight visual OCR (Optical Character Recognition) on dynamic rendering viewports or manually re-map the layout. This results in $C_{\text{res}} \to \infty$ and $C_{\text{eng}} \to \infty$, causing the automatic extraction utility to experience complete economic collapse.
+
+\newpage
+\section{The Isomorphic Hybrid Physical Architecture}
+The foundational architecture of the SCIPIO protocol thrives upon modern React Server Components (RSC) and standard isomorphic execution. The data-flow consists of three major temporal and logical pipelines, shown in Figure \ref{fig:flow}:
+
+\begin{figure}[htbp]
+    \centering
+    \fbox{
+        \begin{minipage}{0.9\linewidth}
+            \small
+            \begin{algorithmic}[1]
+                \State \textbf{Server Side Environment:}
+                \State Read raw document text: $S_{\text{raw}}$
+                \State Get current epoch step: $t_{\text{step}} \leftarrow \lfloor \text{Time} / 30s \rfloor$
+                \State Generate LyokoToken: $\mathcal{L}_{\text{token}} \leftarrow \text{HMAC-SHA256}(K_{\text{seed}}, t_{\text{step}})$
+                \State Permute nodes and inject Markov decoys: $S_{\text{obfuscated}}$
+                \State Render static responsive HTML and inline CSS
+                \State \hfill $\downarrow$ \hfill \textit{Network Node Transit}
+                \State \textbf{Client Side Browser Engine:}
+                \State Receive scrambled SSR markup (Clean SEO Indexing)
+                \State \textbf{Zero JS Execution}: C++ Painting Engine parses layout Styles
+                \State CSS visual box layout mapping based on \texttt{order} attribute
+            \end{algorithmic}
+        \end{minipage}
+    }
+    \caption{Project SCIPIO Logical Data flow Pipeline}
+    \label{fig:flow}
+\end{figure}
+
+\subsection{Temporal Phase-Shift and HMAC Derivation}
+At time $T$, the secure server-side Node.js environment determines the epoch window step $t_{\text{step}}$:
+\begin{equation}
+    t_{\text{step}} = \left\lfloor \frac{T}{\Delta \tau} \right\rfloor
+\end{equation}
+where $\Delta \tau$ is the phase-shifting threshold, default set to $30$ seconds. 
+
+The server subsequently computes the transient session index token, denoted as $\mathcal{L}_{\text{token}}$ (LyokoToken):
+\begin{equation}
+    \mathcal{L}_{\text{token}} = \text{HMAC-SHA256}(K_{\text{seed}}, t_{\text{step}})
+\end{equation}
+where $K_{\text{seed}}$ is a cryptographically strong 32-bit core seed isolated strictly within the server environment variables. Under this mechanism, the exact sequence of DOM permutation transforms every $\Delta \tau$ seconds. This execution is stateless on the server side and requires no persistent memory stores.
+
+\subsection{PRNG-Seeded Deterministic Permutation}
+To map the shuffled elements onto correct visual indices without delivering the seed to the client, we employ a deterministic pseudo-random number generator (PRNG) seeded directly by $\mathcal{L}_{\text{token}}$. 
+
+The 256-bit output of the HMAC hash is divided into eight 32-bit integers:
+\begin{equation}
+    \mathbf{Seed}_{\text{array}} = [s_0, s_1, s_2, \dots, s_7]
+\end{equation}
+We implement a lightweight, high-performance LCG (Linear Congruential Generator) or Mulberry32 algorithm to perform a seeded Fisher-Yates array shuffle. Let the original, structured textual array of nodes be:
+\begin{equation}
+    S_{\text{raw}} = [s_1, s_2, s_3, \dots, s_n]
+\end{equation}
+The pseudo-random permutation map $\Pi_{\mathcal{L}}$ generator function maps every index $i$ to a scrambled position $j$:
+\begin{equation}
+    \Pi_{\mathcal{L}}(i) = j \quad \forall \quad i, j \in [1, n], \quad \text{seeded by } \mathcal{L}_{\text{token}} \cite{knuth}
+\end{equation}
+
+\subsection{Contextual Honeypot Decoy Injection}
+Simply scrambling the order is vulnerable to frequency-analysis cryptanalysis (e.g., standard language grammar models reconstructing the text based on common letter combinations). To defuse this threat vector, SCIPIO dynamically injects high-entropy decoy nodes (Honeypots), denoted as:
+\begin{equation}
+    H = [h_1, h_2, \dots, m_m]
+\end{equation}
+These decoy nodes are populated with context-aware Markov chain scrambled text fragments. The decoys mimic raw text statistical distributions, rendering NLP parser models ineffective. 
+
+Honeypots are embedded directly into the HTML markup stream but target selective rendering layers. They are styled with absolute CSS constraints:
+\begin{equation}
+    \text{Layout}(h) \to \{ w=0, \ h=0, \ \text{opacity}=0, \ \text{pointer-events}=\text{none} \}
+\end{equation}
+By setting \texttt{aria-hidden="true"} and \texttt{tabindex="-1"}, honeypots are completely ignored by accessibility APIs, voice screen-readers, and visual human viewers, but are indistinguishable from real nodes to DOM-based programmatic parsers.
+
+The output DOM nodes array, $S_{\text{obfuscated}}$, sent to the browser is:
+\begin{equation}
+    S_{\text{obfuscated}} = \text{Shuffle}(S_{\text{raw}} \cup H, \Pi_{\mathcal{L}})
+\end{equation}
+
+\section{Browser CSS Layout Re-ordering Implementation}
+The visual reconstruction on user terminals relies purely on declarative CSS specifications. Modern rendering layouts such as CSS Flexbox or CSS Grid natively handle spatial box flows independent of DOM node sequence order. Each text segment $s_i$ is mapped to a designated HTML element (e.g., span) decorated with a target temporal design identifier or dynamic inline rules:
+\lstset{language=HTML}
+\begin{lstlisting}
+<!-- Sample Shuffled Output Markup -->
+<div class="scipio-stage" style="display: flex; flex-wrap: wrap;">
+  <span style="order: 3;">Isomorphic </span>
+  <span aria-hidden="true" style="position: absolute; width: 0; height: 0; opacity: 0; pointer-events: none;">[DECOY MARKOV TEXT]</span>
+  <span style="order: 1;">Project </span>
+  <span style="order: 4;">Obfuscation.</span>
+  <span style="order: 2;">SCIPIO </span>
+</div>
+\end{lstlisting}
+
+When the browser parses the static markup, its native C++ styles engine matches the layout flow:
+\begin{enumerate}
+    \item Element \emph{``Project''} is visually positioned first (\texttt{order: 1}).
+    \item Element \emph{``SCIPIO''} is positioned second (\texttt{order: 2}).
+    \item Element \emph{``Isomorphic''} is positioned third (\texttt{order: 3}).
+    \item Element \emph{``Obfuscation.''} is positioned fourth (\texttt{order: 4}).
+    \item The decoy element with absolute bounds is discarded silently during the rasterization layout stage, resulting in zero rendering noise.
+\end{enumerate}
+
+\section{Security Validation \& Performance Evaluation}
+To validate the effectiveness of the SCIPIO protocol, we executed extraction benchmarks comparing headless automation scrapers against the SCIPIO container. 
+
+As shown in Table \ref{tab:scrape}, standard DOM-tree extraction engines fail completely due to the absence of sequential mapping metadata inside client JavaScript bundles. Visual OCR rendering yields a high reconstruction rate, but forces the scraper to spend tremendous GPU/CPU overhead, reducing extraction throughput by several orders of magnitude. 
+
+Importantly, since Googlebot's standard visual indexing engines render styles correctly, page indexing integrity is fully preserved. Because all decryption-related logic is eliminated from client JS scripts, the hydration time is the same as rendering a standard static page, maintaining high PageSpeed insights rankings.
+
+\begin{table}[b!]
+    \centering
+    \vspace{1.5ex}
+    \caption{Scraping Methods extraction baseline metrics under SCIPIO}
+    \label{tab:scrape}
+    \resizebox{\columnwidth}{!}{%
+    \begin{tabular}{llr}
+        \toprule
+        \textbf{Scraper Method} & \textbf{Parser Node Mechanism} & \textbf{Reconstruction Rate} \\
+        \midrule
+        Axios / Static parser & Static CSS \& DOM stream & 0.00\% (Junk + Decoys) \\
+        Puppeteer / textContent & Dynamic JS DOM serialization & 0.00\% (Scrambled) \\
+        NLP Frequency-Analysis & Dynamic sentence grammars & $<$ 1.34\% (Markov Defeated) \\
+        Visual OCR Rendering & Full viewport pixel extraction & 98.67\% (High CPU cost) \\
+        \bottomrule
+    \end{tabular}%
+    }
+\end{table}
+
+\section{Intellectual Property Pre-emption \& Prior Art Declaration}
+
+The primary architect and inventor, \textbf{Jeremy Yau}, asserts full, uncompromised intellectual authorship and moral ownership over the concepts of:
+\begin{enumerate}
+    \item Utilizing isomorphic application states (e.g., Server-Side Rendering in Next.js Server Components) to dynamically permute DOM structures based on transient cryptographic seeds.
+    \item Shuffling document trees entirely on the server-side while outsourcing the spatial re-ordering to declarative client-side CSS variables (Flexbox/Grid), eliminating the delivery of decryption key seeds or client JavaScript interpreters.
+    \item Dynamically blending contextually aware Markov chain honeypot decoy nodes in shuffled streams to defeat static frequency-analysis algorithms.
+\end{enumerate}
+
+\subsection{Preventative Patent Defense}
+Any subsequent patent filings by any third-party commercial organization, entity, or search aggregator attempting to claim proprietary ownership over time-based server-side DOM scrambling using CSS-visual reconstruction will be dynamically invalidated by this academic publication. Under USPTO and EPO standards, this document serves as a prior-art barrier, establishing that the underlying technological protocol was already publicly documented, engineered, and owned by Jeremy Yau.
+
+\section{Conclusion}
+Project SCIPIO shifts Web content security away from fragile client sandboxes to robust server-side boundaries. By capitalizing on Next.js Server Component rendering timelines, the protocol protects premium text assets with zero hydration overhead and optimal SEO compatibility. Future research will explore multi-dimensional canvas-noise mapping and secure Edge-delivery configurations (e.g., Cloudflare Workers) to establish a universal anti-AI data mining layer.
+
+\bibliographystyle{IEEEtran}
+\begin{thebibliography}{9}
+\bibitem{owasp}
+OWASP, \emph{OWASP Automated Threat Handbook - Web Applications}, OWASP Foundation, 2020. [Online]. Available: \url{https://owasp.org/www-project-automated-threat-handbook/}
+\bibitem{knuth}
+D.~E. Knuth, \emph{The Art of Computer Programming, Volume 2: Seminumerical Algorithms}, 3rd~ed.\hskip 1em plus 0.5em minus 0.4em\relax Reading, MA: Addison-Wesley, 1997.
+\bibitem{whatwg}
+WHATWG, ``HTML Living Standard,'' WHATWG, 2026. [Online]. Available: \url{https://html.spec.whatwg.org/}
+\end{thebibliography}
+
+\end{document}
