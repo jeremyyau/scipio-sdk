@@ -3,7 +3,7 @@
 **Time-Based Isomorphic DOM Obfuscation Protocol for React Server Components.**
 
 ![npm version](https://img.shields.io/npm/v/scipio-sdk?color=blue)
-![license](https://img.shields.io/npm/l/scipio-sdk)
+![license](https://img.shields.io/npm/l/scipio-sdk?cacheSeconds=0)
 
 The **SCIPIO Protocol (Sovereignty Pre-emption & Isomorphic Obfuscation)** is a state-of-the-art web security mechanism engineered to protect text-based intellectual properties from automated scraping systems and LLM data harvesters.
 
