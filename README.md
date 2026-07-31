@@ -9,6 +9,8 @@ The **SCIPIO Protocol (Sovereignty Pre-emption & Isomorphic Obfuscation)** is a 
 
 Traditional web-scraping defenses (e.g., JavaScript obfuscation, dynamic web fonts) suffer from a fundamental architectural flaw: decryption logic and secret seeds must migrate to the client, leaving them vulnerable to reverse engineering. SCIPIO completely divorces the decryption engine from the client browser by utilizing native browser CSS layout engines (Flexbox/Grid) for visual re-ordering, making scraper Developer Experience (DX) and ROI collapse to near-zero.
 
+The whilepaper is available on Zenodo: https://zenodo.org/records/21189654
+
 ---
 
 ## 🛡️ Core Features
